@@ -1,0 +1,333 @@
+/* Global stylesheet — Tailwind base layers + 3D animations */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── shadcn/ui CSS Variables (Dark Theme) ─────────────────── */
+@layer base {
+  :root {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 100%;
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 100%;
+    --border: 240 10% 15%;
+    --input: 240 10% 12%;
+    --ring: 154 100% 50%;
+    --primary: 154 100% 50%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 265 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 10% 60%;
+    --accent: 265 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --radius: 0.5rem;
+
+    /* 3D Layer depth tokens */
+    --z-near:  translateZ(40px);
+    --z-mid:   translateZ(20px);
+    --z-far:   translateZ(0px);
+    --perspective: 800px;
+
+    /* ── Material Design 3 color tokens (used by Stitch UI components) ── */
+    --md-on-surface:               #e2e2e8;
+    --md-on-surface-variant:       #a0a0b8;
+    --md-primary-container:        #00ff9f;
+    --md-on-primary-container:     #0a0a0f;
+    --md-surface-container-high:   #1e1e2e;
+    --md-surface-container-low:    #16161f;
+    --md-surface-container-lowest: #0f0f18;
+    --md-outline:                  #3a3a5a;
+    --md-outline-variant:          #2a2a3e;
+    --md-tertiary:                 #7000ff;
+    --md-tertiary-fixed-dim:       #b08cff;
+    --md-primary-fixed:            #00d480;
+    --md-error:                    #f87171;
+  }
+}
+
+/* ── Global base styles ───────────────────────────────────── */
+@layer base {
+  * { @apply border-border; }
+
+  body {
+    @apply bg-[#0a0a0f] text-white;
+    font-family: 'Inter', 'JetBrains Mono', monospace;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #1e1e2e; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #00ff9f44; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3D KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Floating levitation — Y axis + subtle Z depth oscillation */
+@keyframes float3d {
+  0%   { transform: translateY(0px)   translateZ(0px)   rotateX(0deg); }
+  33%  { transform: translateY(-12px) translateZ(8px)   rotateX(1.5deg); }
+  66%  { transform: translateY(-6px)  translateZ(4px)   rotateX(-1deg); }
+  100% { transform: translateY(0px)   translateZ(0px)   rotateX(0deg); }
+}
+
+/* Rotating 3D orb */
+@keyframes orbRotate {
+  0%   { transform: rotateY(0deg)   rotateX(15deg)  scale(1); }
+  50%  { transform: rotateY(180deg) rotateX(-10deg) scale(1.04); }
+  100% { transform: rotateY(360deg) rotateX(15deg)  scale(1); }
+}
+
+/* Orb glow pulse */
+@keyframes orbGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 40px  #00ff9f66,
+      0 0 80px  #00ff9f33,
+      0 0 140px #00ff9f11,
+      inset 0 0 40px #00ff9f22;
+  }
+  50% {
+    box-shadow:
+      0 0 60px  #00ff9f99,
+      0 0 120px #00ff9f55,
+      0 0 200px #00ff9f22,
+      inset 0 0 60px #00ff9f44;
+  }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Page fade-in with 3D Y lift */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px) translateZ(-20px); }
+  to   { opacity: 1; transform: translateY(0)    translateZ(0); }
+}
+
+/* Stagger slide-in from left (History cards) */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px) translateZ(-30px) rotateY(-8deg); }
+  to   { opacity: 1; transform: translateX(0)     translateZ(0)     rotateY(0deg); }
+}
+
+/* Score count-up pop */
+@keyframes scorePop {
+  0%   { opacity: 0; transform: scale(0.4) translateZ(-60px); filter: blur(8px); }
+  60%  { opacity: 1; transform: scale(1.08) translateZ(20px); filter: blur(0); }
+  80%  { transform: scale(0.97) translateZ(8px); }
+  100% { transform: scale(1)    translateZ(0); }
+}
+
+/* Pill slide up stagger */
+@keyframes pillRise {
+  from { opacity: 0; transform: translateY(20px) translateZ(-10px); }
+  to   { opacity: 1; transform: translateY(0)    translateZ(0); }
+}
+
+/* Scanning horizontal line animation */
+@keyframes scanLine {
+  from { transform: translateY(-100%); opacity: 0.7; }
+  to   { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Shimmer sweep across surface */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+
+/* Scroll chevron bounce */
+@keyframes chevronBounce {
+  0%, 100% { transform: translateY(0) translateX(-50%); opacity: 0.6; }
+  50%       { transform: translateY(8px) translateX(-50%); opacity: 1; }
+}
+
+/* Particle pulse ring */
+@keyframes particlePing {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Navbar scroll depth lift */
+@keyframes navLift {
+  from { box-shadow: none; }
+  to   { box-shadow: 0 8px 40px #00000088, 0 0 0 1px #00ff9f11; }
+}
+
+/* Empty state ghost float */
+@keyframes ghostFloat {
+  0%, 100% { transform: translateY(0) rotate(-3deg);  filter: drop-shadow(0 0 12px #00ff9f44); }
+  50%       { transform: translateY(-16px) rotate(3deg); filter: drop-shadow(0 0 24px #00ff9f88); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEON GLOW UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+@layer utilities {
+  .neon-green {
+    text-shadow: 0 0 10px #00ff9f, 0 0 20px #00ff9f55;
+    color: #00ff9f;
+  }
+  .neon-purple {
+    text-shadow: 0 0 10px #7000ff, 0 0 20px #7000ff55;
+    color: #7000ff;
+  }
+  .glow-border-green {
+    border-color: #00ff9f;
+    box-shadow: 0 0 8px #00ff9f44, inset 0 0 8px #00ff9f11;
+  }
+  .glow-border-purple {
+    border-color: #7000ff;
+    box-shadow: 0 0 8px #7000ff44, inset 0 0 8px #7000ff11;
+  }
+  .card-dark {
+    background: #12121a;
+    border: 1px solid #1e1e2e;
+  }
+
+  /* ── 3D Card Utilities ──────────────────────────────────── */
+  .perspective-container {
+    perspective: var(--perspective);
+    perspective-origin: center center;
+  }
+
+  /* Base 3D card — GPU layer promotion */
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Hover state handled via JS inline styles for precise tilt */
+  .card-3d:hover {
+    box-shadow:
+      0 20px 60px #00000066,
+      0 0 30px #00ff9f11;
+  }
+
+  /* Levitating float animation with stagger via CSS custom prop */
+  .float-card {
+    animation: float3d 6s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  /* Score reveal pop */
+  .score-pop {
+    animation: scorePop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Slide-in left stagger — use style="--slide-delay: Xs" */
+  .slide-left {
+    opacity: 0;
+    animation: slideInLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--slide-delay, 0s);
+  }
+
+  /* Pill rise stagger */
+  .pill-rise {
+    opacity: 0;
+    animation: pillRise 0.4s ease forwards;
+    animation-delay: var(--pill-delay, 0s);
+  }
+
+  /* Ghost float for empty states */
+  .ghost-float {
+    animation: ghostFloat 3.5s ease-in-out infinite;
+  }
+
+  /* Shimmer loading stripe */
+  .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      #12121a 0%,
+      #1e1e2e 40%,
+      #2a2a3e 50%,
+      #1e1e2e 60%,
+      #12121a 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  /* Scan line overlay for hero */
+  .scan-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 95%,
+      #00ff9f08 100%
+    );
+    animation: scanLine 4s linear infinite;
+    pointer-events: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE TRANSITIONS
+   ═══════════════════════════════════════════════════════════ */
+.page-enter {
+  animation: fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATED GRID BACKGROUND
+   ═══════════════════════════════════════════════════════════ */
+.grid-bg {
+  background-image:
+    linear-gradient(#1e1e2e22 1px, transparent 1px),
+    linear-gradient(90deg, #1e1e2e22 1px, transparent 1px);
+  background-size: 40px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial fade mask over the grid so edges fade out */
+.grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, #0a0a0f 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3D ORB
+   ═══════════════════════════════════════════════════════════ */
+.orb-3d {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #00ff9f44 0%,
+    #00ff9f11 40%,
+    transparent 70%
+  ),
+  radial-gradient(
+    circle at 65% 65%,
+    #7000ff22 0%,
+    transparent 60%
+  );
+  animation: orbRotate 12s linear infinite, orbGlow 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVBAR SCROLL DEPTH
+   ═══════════════════════════════════════════════════════════ */
+.navbar-scrolled {
+  box-shadow: 0 8px 40px #00000099, 0 0 0 1px #00ff9f11;
+  background: rgba(10, 10, 15, 0.95) !important;
+}
