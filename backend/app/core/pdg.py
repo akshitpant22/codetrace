@@ -8,9 +8,9 @@ import tree_sitter_java as tsjava
 from tree_sitter import Language, Parser
 
 _TS_LANGUAGES = {
-    "c":    Language(tsc.language()),
-    "cpp":  Language(tscpp.language()),
-    "java": Language(tsjava.language()),
+    "c":    Language(tsc.language(), 'c'),
+    "cpp":  Language(tscpp.language(), 'cpp'),
+    "java": Language(tsjava.language(), 'java'),
 }
 
 SUPPORTED_LANGUAGES = {"python", "c", "cpp", "java"}

@@ -18,9 +18,9 @@ _PYTHON_SKIP_TYPES = {
 }
 
 _TS_LANGUAGES = {
-    "c":    Language(tsc.language()),
-    "cpp":  Language(tscpp.language()),
-    "java": Language(tsjava.language()),
+    "c":    Language(tsc.language(), 'c'),
+    "cpp":  Language(tscpp.language(), 'cpp'),
+    "java": Language(tsjava.language(), 'java'),
 }
 
 _TS_COMMENT_NODES = {
