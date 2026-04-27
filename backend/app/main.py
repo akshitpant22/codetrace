@@ -16,10 +16,16 @@ app = FastAPI(
     version="0.1.0",
 )
 
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://codetrace-brown.vercel.app",
+    "https://codetrace.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://codetrace.vercel.app"],
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
