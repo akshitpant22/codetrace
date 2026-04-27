@@ -8,10 +8,21 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
   const { forgotPassword } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [countdown]);
 
   useEffect(() => {
     setIsVisible(true);
@@ -26,9 +37,7 @@ export default function ForgotPassword() {
     try {
       await forgotPassword(email);
       setSuccess("OTP sent! Check your email.");
-      setTimeout(() => {
-        navigate("/verify-otp", { state: { email } });
-      }, 2000);
+      setCountdown(30);
     } catch (err) {
       setError(
         err.response?.data?.detail ||
@@ -36,6 +45,18 @@ export default function ForgotPassword() {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setError("");
+    setSuccess("");
+    try {
+      await forgotPassword(email);
+      setSuccess("OTP resent!");
+      setCountdown(30);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to resend OTP.");
     }
   };
 
@@ -136,20 +157,40 @@ export default function ForgotPassword() {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isLoading || !!success}
-              className="w-full py-3.5 px-4 bg-[#00ff9f] text-[#0a0a0f] font-bold rounded-xl transition-all duration-300 flex justify-center items-center gap-2 hover:bg-[#00e68f] hover:shadow-[0_0_20px_rgba(0,255,159,0.3)] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Send OTP"
-              )}
-            </button>
+            {!success && countdown === 0 ? (
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3.5 px-4 bg-[#00ff9f] text-[#0a0a0f] font-bold rounded-xl transition-all duration-300 flex justify-center items-center gap-2 hover:bg-[#00e68f] hover:shadow-[0_0_20px_rgba(0,255,159,0.3)] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send OTP"
+                )}
+              </button>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate("/verify-otp", { state: { email } })}
+                  className="w-full py-3.5 px-4 bg-[#12121a] text-white border border-[#1e1e2e] font-bold rounded-xl transition-all duration-300 hover:bg-[#1e1e2e]"
+                >
+                  Enter Verification Code
+                </button>
+                <button
+                  type="button"
+                  disabled={countdown > 0}
+                  onClick={handleResend}
+                  className="w-full py-3.5 px-4 border border-[#00ff9f] text-[#00ff9f] font-bold rounded-xl transition-all duration-300 flex justify-center items-center gap-2 hover:bg-[#00ff9f]/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-500"
+                >
+                  {countdown > 0 ? `Resend OTP in ${countdown}s` : "Resend OTP"}
+                </button>
+              </div>
+            )}
           </form>
 
           

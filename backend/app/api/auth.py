@@ -52,7 +52,7 @@ def send_email(to_email: str, subject: str, html_body: str):
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = smtp_user
+    msg["From"] = f"CodeTrace <{smtp_user}>"
     msg["To"] = to_email
 
     part = MIMEText(html_body, "html")
