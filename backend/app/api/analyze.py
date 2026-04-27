@@ -5,19 +5,18 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.orm import Session
 
 from app.core.detector import detect_plagiarism
-from app.database import get_db
+from app.dependencies import get_current_user, get_db
 from app.models.result import Result
+from app.models.user import User
 from app.schemas.result import ResultResponse
 
 router = APIRouter(prefix="/api", tags=["analyze"])
 
 ALLOWED_EXTENSIONS = {".py", ".c", ".cpp", ".java", ".js", ".ts"}
 
-
 def _is_allowed_file(filename: str) -> bool:
     _, ext = os.path.splitext(filename or "")
     return ext.lower() in ALLOWED_EXTENSIONS
-
 
 @router.post("/analyze", response_model=ResultResponse)
 def analyze_code(
@@ -25,6 +24,7 @@ def analyze_code(
     file2: Annotated[UploadFile, File(..., description="Second code file")],
     language: Annotated[str, Form(...)],
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     if not _is_allowed_file(file1.filename) or not _is_allowed_file(file2.filename):
         raise HTTPException(
@@ -62,7 +62,10 @@ def analyze_code(
         lexical_score=result["lexical_score"],
         syntax_score=result["syntax_score"],
         semantic_score=result["semantic_score"],
+        cfg_score=result["cfg_score"],
+        pdg_score=result["pdg_score"],
         final_score=result["final_score"],
+        verdict=result["verdict"],
     )
     db.add(db_result)
     db.commit()

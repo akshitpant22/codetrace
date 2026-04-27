@@ -10,3 +10,13 @@ build/
 *.egg-info/
 .DS_Store
 *.log
+
+# JPlag jar and results (too large for GitHub)
+backend/jplag/jplag.jar
+backend/jplag/results/
+
+# Alembic cache
+backend/alembic/__pycache__/
+
+# Frontend build
+frontend/dist/

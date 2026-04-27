@@ -2,9 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from app.config import settings
-
 engine = create_engine(
     settings.DATABASE_URL,
+    pool_size=10,
+    max_overflow=2,
+    pool_recycle=300,
     pool_pre_ping=True,
 )
 
@@ -15,7 +17,6 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
-
 
 def get_db():
     db = SessionLocal()

@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.auth import router as auth_router
+import app.models.user
 from app.database import engine, Base
 from app.api.analyze import router as analyze_router
-
-import app.models.result  # noqa: F401
+from app.api.history import router as history_router
+from app.api.multi_analyze import router as multi_analyze_router
+from app.api.rdp_analyze import router as rdp_analyze_router
+import app.models.result
+import app.models.multi_result
 
 app = FastAPI(
     title="CodeTrace",
@@ -19,14 +23,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(analyze_router)
-
+app.include_router(history_router)
+app.include_router(multi_analyze_router)
+app.include_router(auth_router)
+app.include_router(rdp_analyze_router)
 
 @app.on_event("startup")
 def create_tables():
     Base.metadata.create_all(bind=engine)
-
 
 @app.get("/", tags=["Health"])
 def health_check():

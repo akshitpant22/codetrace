@@ -14,6 +14,21 @@ const api = axios.create({
   withCredentials: false, // Set to true when cookie-based auth is added
 });
 
+// ── Request interceptor ────────────────────────────────────────────────────
+// Attaches JWT token from localStorage to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // ── Response interceptor ───────────────────────────────────────────────────
 // Centralized error handling — logs errors and re-throws for the caller.
 api.interceptors.response.use(

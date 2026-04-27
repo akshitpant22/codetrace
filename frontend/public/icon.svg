@@ -1,0 +1,24 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff9f" />
+      <stop offset="100%" stop-color="#00b873" />
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="3" />
+    </filter>
+  </defs>
+  
+  <rect width="64" height="64" rx="16" fill="#0a0a0f"/>
+  
+  <path d="M32 12 L50 22 L50 42 L32 52 L14 42 L14 22 Z" fill="#00ff9f" opacity="0.15" filter="url(#blur)"/>
+  
+  <path d="M32 16 L48 25 L48 39 L32 48 L16 39 L16 25 Z" fill="none" stroke="url(#glow)" stroke-width="3" stroke-linejoin="round" />
+  
+  <path d="M32 24 L32 40" fill="none" stroke="url(#glow)" stroke-width="3" stroke-linecap="round" />
+  <path d="M16 25 L32 34 L48 25" fill="none" stroke="url(#glow)" stroke-width="3" stroke-linejoin="round" />
+  <circle cx="32" cy="40" r="3" fill="#ffffff" />
+  <circle cx="32" cy="24" r="3" fill="#ffffff" />
+  <circle cx="16" cy="25" r="3" fill="#ffffff" />
+  <circle cx="48" cy="25" r="3" fill="#ffffff" />
+</svg>
