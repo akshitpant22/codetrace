@@ -1,5 +1,5 @@
 // src/api/index.js — Axios instance for CodeTrace API
-// Points to FastAPI backend at http://localhost:8000
+// Points to FastAPI backend at https://codetrace-backend-7gam.onrender.com
 
 import axios from "axios";
 
@@ -10,7 +10,7 @@ import axios from "axios";
 //   automatically when a FormData object is passed — overriding it globally
 //   would break file uploads.
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://codetrace-backend-7gam.onrender.com",
   withCredentials: false, // Set to true when cookie-based auth is added
 });
 

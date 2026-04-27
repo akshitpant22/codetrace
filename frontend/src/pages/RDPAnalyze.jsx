@@ -50,7 +50,7 @@ const RDPAnalyze = () => {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:8000/api/rdp-analyze', {
+      const response = await axios.post('https://codetrace-backend-7gam.onrender.com/api/rdp-analyze', {
         code1,
         code2
       });
