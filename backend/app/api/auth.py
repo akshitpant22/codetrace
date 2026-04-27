@@ -39,37 +39,41 @@ def create_access_token(data: dict) -> str:
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-def send_email(to_email: str, subject: str, html_body: str):
-    smtp_host = settings.SMTP_HOST
-    smtp_port = settings.SMTP_PORT
-    smtp_user = settings.SMTP_USER
-    smtp_pass = settings.SMTP_PASS
+import os
 
-    if not all([smtp_host, smtp_port, smtp_user, smtp_pass]):
-        print(f"[DEV MODE] SMTP not configured. Email to {to_email} not sent.")
-        print(f"Subject: {subject}")
-        return
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = f"CodeTrace <{smtp_user}>"
-    msg["To"] = to_email
-
-    part = MIMEText(html_body, "html")
-    msg.attach(part)
-
+def send_email(to: str, subject: str, html_body: str):
     try:
-        with smtplib.SMTP(smtp_host, int(smtp_port)) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_pass)
-            server.send_message(msg)
-    except Exception as e:
-        print(f"Failed to send email to {to_email}: {e}")
+        SMTP_HOST = settings.SMTP_HOST
+        SMTP_PORT = settings.SMTP_PORT
+        SMTP_USER = settings.SMTP_USER
+        SMTP_PASS = settings.SMTP_PASS
 
-def send_email_async(to_email: str, subject: str, html_body: str):
+        if not all([SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS]):
+            print(f"[DEV MODE] Email to {to}: {subject}")
+            return
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = f"CodeTrace <{SMTP_USER}>"
+        msg["To"] = to
+
+        html_part = MIMEText(html_body, "html", "utf-8")
+        msg.attach(html_part)
+
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(SMTP_USER, SMTP_PASS)
+            server.sendmail(SMTP_USER, to, msg.as_string())
+            
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+
+def send_email_async(to: str, subject: str, html_body: str):
     thread = threading.Thread(
-        target=send_email, 
-        args=(to_email, subject, html_body)
+        target=send_email,
+        args=(to, subject, html_body)
     )
     thread.daemon = True
     thread.start()
@@ -78,23 +82,25 @@ def send_welcome_email(to_email: str):
     subject = "Welcome to CodeTrace 🎉"
     html_body = f"""
     <html>
-      <body style="background-color:
-        <div style="max-width: 600px; margin: 0 auto; background-color:
+      <body style="background-color: #0d0d14; color: #ffffff; font-family: sans-serif; margin: 0; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #12121a; border: 1px solid #1e1e2e; border-radius: 16px; overflow: hidden;">
           <div style="padding: 40px; text-align: center;">
-            <h1 style="color:
-            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Welcome to CodeTrace!</h2>
-            <p style="color:
+            <h1 style="color: #00ff9f; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -1px; white-space: nowrap;">CodeTrace</h1>
+            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 10px; margin-top: 20px;">Welcome to CodeTrace!</h2>
+            <p style="color: #8888aa; line-height: 1.6; margin-bottom: 30px;">
+              Thank you for joining CodeTrace. Our advanced AST and Winnowing-based engine is ready to help you analyze and protect your codebase.
+            </p>
             
-            <div style="background-color:
-              <p style="margin: 0; color:
-              <p style="margin: 10px 0 0 0; color:
+            <div style="background-color: rgba(0, 255, 159, 0.1); border: 1px solid rgba(0, 255, 159, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+              <p style="margin: 0; color: #00ff9f; font-size: 16px; font-weight: 600;">Account Successfully Created</p>
+              <p style="margin: 10px 0 0 0; color: #8888aa; font-size: 14px;">You can now log in to the dashboard and start your first code analysis.</p>
             </div>
             
-            <a href="http://localhost:5173/login" style="display: inline-block; background-color:
+            <a href="https://codetrace.vercel.app/login" style="display: inline-block; background-color: #00ff9f; color: #0a0a0f; text-decoration: none; font-weight: 700; padding: 14px 28px; border-radius: 12px; font-size: 16px;">Go to Dashboard</a>
             
-            <hr style="border: 0; border-top: 1px solid
-            <p style="color:
-            <p style="color:
+            <hr style="border: 0; border-top: 1px solid #1e1e2e; margin: 40px 0 20px;" />
+            <p style="color: #8888aa; font-size: 12px; margin: 0;">If you didn't create this account, please ignore this email.</p>
+            <p style="color: #8888aa; font-size: 12px; margin: 5px 0 0;">© {datetime.now().year} CodeTrace. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -102,35 +108,27 @@ def send_welcome_email(to_email: str):
     """
     send_email_async(to_email, subject, html_body)
 
-def send_otp_email(to_email: str, otp: str):
-    subject = "Your CodeTrace Verification Code 🔐"
-    html_body = f"""
+def send_otp_email(to: str, otp: str):
+    html = f"""
     <html>
-      <body style="background-color:
-        <div style="max-width: 600px; margin: 0 auto; background-color:
-          <div style="padding: 40px; text-align: center;">
-            <h1 style="color:
-            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">Password Reset Request</h2>
-            <p style="color:
-            
-            <div style="background-color:
-              <p style="margin: 0; color:
-            </div>
-            
-            <p style="color:
-            
-            <hr style="border: 0; border-top: 1px solid
-            <p style="color:
-            <p style="color:
-          </div>
+    <body style="margin:0;padding:0;background-color:#0a0a0f;font-family:Arial,sans-serif;">
+      <div style="max-width:500px;margin:40px auto;background-color:#12121a;border-radius:12px;padding:40px;border:1px solid #1e1e2e;">
+        <h1 style="color:#00ff9f;text-align:center;font-size:28px;margin-bottom:8px;">CodeTrace</h1>
+        <p style="color:#888;text-align:center;margin-bottom:32px;">Code Plagiarism Detection System</p>
+        <h2 style="color:#ffffff;text-align:center;">Password Reset Request</h2>
+        <p style="color:#aaa;text-align:center;">Use the code below to reset your password.</p>
+        <div style="background-color:#0d0d14;border:2px solid #00ff9f;border-radius:8px;padding:24px;text-align:center;margin:24px 0;">
+          <span style="color:#00ff9f;font-size:48px;font-weight:bold;letter-spacing:12px;">{otp}</span>
         </div>
-      </body>
+        <p style="color:#ff4444;text-align:center;">This code expires in 10 minutes.</p>
+        <p style="color:#666;text-align:center;font-size:12px;">If you didn't request this, ignore this email.</p>
+        <hr style="border:0;border-top:1px solid #1e1e2e;margin:24px 0;">
+        <p style="color:#444;text-align:center;font-size:12px;">CodeTrace - Code Plagiarism Detection System</p>
+      </div>
+    </body>
     </html>
     """
-    send_email_async(to_email, subject, html_body)
-    
-    if not all([settings.SMTP_HOST, settings.SMTP_PORT, settings.SMTP_USER, settings.SMTP_PASS]):
-        print(f"[DEV MODE] OTP for {to_email} is {otp}")
+    send_email_async(to, "Your CodeTrace Verification Code 🔐", html)
 @router.post("/register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == request.email).first()
