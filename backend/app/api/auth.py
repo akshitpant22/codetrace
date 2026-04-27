@@ -96,8 +96,6 @@ def send_welcome_email(to_email: str):
               <p style="margin: 10px 0 0 0; color: #8888aa; font-size: 14px;">You can now log in to the dashboard and start your first code analysis.</p>
             </div>
             
-            <a href="https://codetrace.vercel.app/login" style="display: inline-block; background-color: #00ff9f; color: #0a0a0f; text-decoration: none; font-weight: 700; padding: 14px 28px; border-radius: 12px; font-size: 16px;">Go to Dashboard</a>
-            
             <hr style="border: 0; border-top: 1px solid #1e1e2e; margin: 40px 0 20px;" />
             <p style="color: #8888aa; font-size: 12px; margin: 0;">If you didn't create this account, please ignore this email.</p>
             <p style="color: #8888aa; font-size: 12px; margin: 5px 0 0;">© {datetime.now().year} CodeTrace. All rights reserved.</p>
